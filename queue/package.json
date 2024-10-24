@@ -1,0 +1,20 @@
+{
+  "name": "thalia",
+  "module": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "worker": "bun --env-file=../.env --watch src/worker.ts",
+    "start": "bun --env-file=../.env src/queue.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "bullmq": "^5.21.2",
+    "dom-parser": "^1.1.5",
+    "ioredis": "^5.4.1"
+  }
+}

@@ -1,0 +1,24 @@
+volumes:
+  redis:
+
+services:
+  flare:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    ports:
+      - '127.0.0.1:8191:8191'
+      - '127.0.0.1:9191:9191'
+    environment:
+      - 'PROMETHEUS_ENABLED=true'
+      - 'PROMETHEUS_PORT=9191'
+      - 'LOG_LEVEL=info'
+
+  redis:
+    image: redis:6.2-alpine
+    ports:
+      - '127.0.0.1:6379:6379'
+    restart: always
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${NUXT_REDIS_PASSWORD}
+    healthcheck:
+      test: redis-cli -a ${NUXT_REDIS_PASSWORD} ping || exit 1
+    volumes:
+      - redis:/data
