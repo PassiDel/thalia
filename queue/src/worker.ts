@@ -1,3 +1,4 @@
+import { InfluxDB, Point } from '@influxdata/influxdb-client';
 import { Worker } from 'bullmq';
 import { parseFromString } from 'dom-parser';
 import IORedis from 'ioredis';
@@ -8,6 +9,15 @@ const connection = new IORedis({
   maxRetriesPerRequest: 0,
   password: process.env.NUXT_REDIS_PASSWORD
 });
+const influxDB = new InfluxDB({
+  url: process.env.NUXT_INFLUX_URL!!,
+  timeout: 10_000,
+  token: process.env.NUXT_INFLUX_TOKEN!!
+});
+const writeClient = influxDB.getWriteApi(
+  process.env.NUXT_INFLUX_ORG!!,
+  process.env.NUXT_INFLUX_BUCKET!!
+);
 
 const worker = new Worker<ScrapeData>(
   'scrape',
@@ -54,6 +64,15 @@ const worker = new Worker<ScrapeData>(
       image,
       lastPrice: price
     };
+
+    const point = new Point('book')
+      .tag('key', key)
+      .tag('author', author)
+      .tag('title', title)
+      .floatField('price', price);
+
+    writeClient.writePoint(point);
+    await writeClient.flush();
 
     await connection.set(key, JSON.stringify(newData));
     console.log('End', job.data, newData);
