@@ -9,6 +9,7 @@ networks:
 services:
   flare:
     image: ghcr.io/flaresolverr/flaresolverr:latest
+    restart: always
     networks:
       - internal
     ports:
@@ -51,3 +52,49 @@ services:
     restart: always
     healthcheck:
       test: curl --fail http://localhost:8086 || exit 1
+
+  web:
+    image: ghcr.io/passidel/thalia-web:latest
+    build:
+      context: .
+      dockerfile: web.Dockerfile
+    restart: always
+    profiles:
+      - prod
+    ports:
+      - '127.0.0.1:${WEB_PORT:-3000}:3000'
+    depends_on:
+      - redis
+      - influx
+    networks:
+      - internal
+    environment:
+      - NUXT_INFLUX_URL=${NUXT_INFLUX_URL}
+      - NUXT_INFLUX_TOKEN=${NUXT_INFLUX_TOKEN}
+      - NUXT_INFLUX_ORG=${NUXT_INFLUX_ORG}
+      - NUXT_INFLUX_BUCKET=${NUXT_INFLUX_BUCKET}
+      - NUXT_REDIS_HOST=${NUXT_REDIS_HOST}
+      - NUXT_REDIS_PASSWORD=${NUXT_REDIS_PASSWORD}
+
+  worker:
+    image: ghcr.io/passidel/thalia-worker:latest
+    build:
+      context: .
+      dockerfile: worker.Dockerfile
+    restart: always
+    profiles:
+      - prod
+    depends_on:
+      - flare
+      - redis
+      - influx
+    networks:
+      - internal
+    environment:
+      - NUXT_INFLUX_URL=${NUXT_INFLUX_URL}
+      - NUXT_INFLUX_TOKEN=${NUXT_INFLUX_TOKEN}
+      - NUXT_INFLUX_ORG=${NUXT_INFLUX_ORG}
+      - NUXT_INFLUX_BUCKET=${NUXT_INFLUX_BUCKET}
+      - NUXT_REDIS_HOST=${NUXT_REDIS_HOST}
+      - NUXT_REDIS_PASSWORD=${NUXT_REDIS_PASSWORD}
+      - PROXY_URL=${PROXY_URL}

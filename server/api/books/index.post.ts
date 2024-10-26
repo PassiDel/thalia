@@ -1,5 +1,5 @@
 import { useValidatedBody, z } from 'h3-zod';
-import { BookItem } from '~/server/utils/queue';
+import type { BookItem } from '~/queue/src/jobs';
 
 export default defineEventHandler(async (event) => {
   const { url } = await useValidatedBody(

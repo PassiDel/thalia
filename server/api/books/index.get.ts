@@ -1,6 +1,6 @@
-import { BookItem } from '~/server/utils/queue';
+import type { BookItem } from '~/queue/src/jobs';
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async () => {
   const bookStorage = useStorage('books');
   const books = await bookStorage
     .getKeys()

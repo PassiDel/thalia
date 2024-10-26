@@ -10,13 +10,3 @@ const connection = new IORedis({
   password: redisPassword
 });
 export const myQueue = new Queue<ScrapeData>('scrape', { connection });
-
-export type BookItem = {
-  key: string;
-  url: string;
-  title?: string;
-  author?: string;
-  isbn?: string;
-  image?: number;
-  lastPrice?: number;
-};

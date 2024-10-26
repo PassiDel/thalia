@@ -2,12 +2,12 @@ import { InfluxDB, Point } from '@influxdata/influxdb-client';
 import { Worker } from 'bullmq';
 import { parseFromString } from 'dom-parser';
 import IORedis from 'ioredis';
-import type { BookItem } from '../../server/utils/queue.ts';
-import type { ScrapeData } from './jobs.ts';
+import type { BookItem, ScrapeData } from './jobs.ts';
 
 const connection = new IORedis({
   maxRetriesPerRequest: 0,
-  password: process.env.NUXT_REDIS_PASSWORD
+  password: process.env.NUXT_REDIS_PASSWORD,
+  host: process.env.NUXT_REDIS_HOST
 });
 const influxDB = new InfluxDB({
   url: process.env.NUXT_INFLUX_URL!!,
@@ -28,7 +28,7 @@ const worker = new Worker<ScrapeData>(
       .get(key)
       .then((s) => JSON.parse(s || '{}') as BookItem);
 
-    const html = await fetch('http://localhost:8191/v1', {
+    const html = await fetch(process.env.PROXY_URL!!, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -86,4 +86,9 @@ worker.on('completed', (job) => {
 
 worker.on('failed', (job, err) => {
   console.log(`${job?.id} has failed with ${err.message}`);
+});
+
+process.on('SIGINT', () => {
+  console.log('Ctrl-C was pressed');
+  process.exit();
 });

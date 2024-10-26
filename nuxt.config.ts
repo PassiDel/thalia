@@ -3,9 +3,17 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
 
+  nitro: {
+    preset: 'bun'
+  },
+
   runtimeConfig: {
     redisPassword: '',
-    redisHost: '127.0.0.1'
+    redisHost: '127.0.0.1',
+    influxUrl: 'http://localhost:8086',
+    influxToken: '',
+    influxOrg: '',
+    influxBucket: ''
   },
 
   modules: ['@nuxtjs/tailwindcss']
