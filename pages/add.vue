@@ -36,7 +36,6 @@ async function submit() {
     };
   }
 
-  console.log(url.value);
   sending.value = false;
 }
 </script>

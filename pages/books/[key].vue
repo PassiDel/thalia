@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import BookGraph from '../../components/BookGraph.vue';
+
 const route = useRoute();
 
 const { key } = route.params;
@@ -11,30 +13,30 @@ const { data } = await useFetch(`/api/books/${key}`);
     <div class="flex flex-col gap-4 md:flex-row">
       <img
         class="col-span-2 mx-auto w-[250px] rounded-xl shadow-lg transition-shadow hover:shadow-2xl md:m-4"
-        v-if="data?.image"
-        :src="data.image"
-        :alt="data?.title || key"
-        :title="data?.title || key"
+        v-if="data?.book?.image"
+        :src="data.book.image"
+        :alt="data?.book?.title || key"
+        :title="data?.book?.title || key"
       />
       <div class="mx-4 flex flex-col justify-center gap-2 md:mx-0">
-        <h1 class="text-2xl">{{ data?.title || key }}</h1>
-        <h2 class="text-xl">{{ data?.author || 'No author' }}</h2>
-        <p>{{ data?.isbn }}</p>
-        <p v-if="data && data.lastPrice">
+        <h1 class="text-2xl">{{ data?.book?.title || key }}</h1>
+        <h2 class="text-xl">{{ data?.book?.author || 'No author' }}</h2>
+        <p>{{ data?.book?.isbn }}</p>
+        <p v-if="data && data.book.lastPrice">
           Price:
-          <span class="font-bold">{{
-            data?.lastPrice.toLocaleString('de-DE', {
-              style: 'currency',
-              currency: 'EUR'
-            })
-          }}</span>
+          <PriceDifference :data="data" />
         </p>
         <p v-else>Price: No price fetched yet!</p>
-        <a class="underline" v-if="data?.url" :href="data.url" target="_blank"
+        <a
+          class="underline"
+          v-if="data?.book?.url"
+          :href="data.book.url"
+          target="_blank"
           >On thalia.de</a
         >
       </div>
     </div>
+    <BookGraph :data="data?.data" />
   </div>
 </template>
 

@@ -1,5 +1,10 @@
 <script setup>
+import BookGraph from '../components/BookGraph.vue';
+
 const { data, refresh, status } = await useFetch(`/api/books`, {
+  lazy: true
+});
+const { data: bookData } = await useFetch(`/api/books/data`, {
   lazy: true
 });
 </script>
@@ -16,6 +21,7 @@ const { data, refresh, status } = await useFetch(`/api/books`, {
         <span class="inline-block group-disabled:animate-spin">⟳</span>
       </button>
     </h1>
+    <BookGraph :data="bookData" hide-legend />
     <div class="mt-4 flex flex-col gap-4" v-if="data">
       <NuxtLink
         v-for="book in data.books"

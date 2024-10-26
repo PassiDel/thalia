@@ -88,7 +88,9 @@ worker.on('failed', (job, err) => {
   console.log(`${job?.id} has failed with ${err.message}`);
 });
 
-process.on('SIGINT', () => {
+process.on('SIGINT', async () => {
   console.log('Ctrl-C was pressed');
+  await worker.close();
+  await connection.quit();
   process.exit();
 });
