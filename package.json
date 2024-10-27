@@ -1,7 +1,9 @@
 {
-  "name": "nuxt-app",
+  "name": "thalia-web",
   "private": true,
   "type": "module",
+  "license": "MIT",
+  "author": "Pascal Syma <pascal@syma.dev> (https://syma.dev/)",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
