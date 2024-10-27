@@ -2,7 +2,7 @@
   "name": "thalia-worker",
   "module": "src/index.ts",
   "type": "module",
-  "license": "MIT",
+  "license": "GPL-3.0",
   "author": "Pascal Syma <pascal@syma.dev> (https://syma.dev/)",
   "scripts": {
     "worker": "bun --env-file=../.env --watch src/worker.ts",
