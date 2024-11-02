@@ -8,9 +8,21 @@ export default cachedEventHandler(
  |> range(start: -7d, stop: now())
   |> filter(fn: (r) => r["_measurement"] == "book")
   |> filter(fn: (r) => r["_field"] == "price")
-  |> aggregateWindow(every: 1h, fn: mean, createEmpty: false)`;
+  |> map(fn: (r) => ({ r with _level: r._value }))
+  |> sort(columns: ["_source_timestamp", "_time"], desc: false) 
+  |> difference(columns: ["_level"]) 
+  |> filter(fn: (r) => r._level != 0) 
+  |> map(fn: (r) => ({ r with _value: r._level }))
+  |> yield(name: "result")`;
 
-    return getBookData(query);
+    const start = new Date().toISOString();
+    return getBookData(query).then((r) =>
+      r.map((d) => {
+        d.data.unshift({ x: d.data[0].x, y: 0 });
+        d.data.push({ x: start, y: d.data[d.data.length - 1].y });
+        return d;
+      })
+    );
   },
   {
     maxAge: 60 * 60, // 1 hour,

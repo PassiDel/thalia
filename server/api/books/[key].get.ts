@@ -47,7 +47,29 @@ export default defineEventHandler(async (event) => {
   |> filter(fn: (r) => r["_measurement"] == "book")
   |> filter(fn: (r) => r["_field"] == "price")
   |> filter(fn: (r) => r["key"] == "books:${key}")
-  |> aggregateWindow(every: 1h, fn: mean, createEmpty: false)`;
+  
+  data = from(bucket: "${influxBucket}")
+ |> range(start: ${start}, stop: ${end})
+  |> filter(fn: (r) => r["_measurement"] == "book")
+  |> filter(fn: (r) => r["_field"] == "price")
+  |> filter(fn: (r) => r["key"] == "books:${key}")
+
+diff = data
+  |> map(fn: (r) => ({ r with _level: r._value }))
+  |> sort(columns: ["_source_timestamp", "_time"], desc: false) 
+  |> difference(columns: ["_level"]) 
+  |> filter(fn: (r) => r._level != 0) 
+
+f = data
+  |> first()
+  |> map(fn: (r) => ({ r with _level: 0.0 }))
+l = data
+  |> last()
+  |> map(fn: (r) => ({ r with _level: 0.0 }))
+
+union(tables: [f, diff, l])
+|> sort(columns: ["_time"], desc: false) 
+|> yield(name: "result")`;
 
   // TODO: add some caching
   const data = await getBookData(query);

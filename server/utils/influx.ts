@@ -13,12 +13,15 @@ export const queryClient = influxDB.getQueryApi(influxOrg);
 export async function getBookData(query: string): Promise<BookInfluxData[]> {
   return await queryClient
     .collectRows(query, (values, tableMeta) => {
-      const { _time, key, title, _value } = tableMeta.toObject(values);
-      return { _time, _value, key, title };
+      const { _time, key, title, _value, result } = tableMeta.toObject(values);
+      return { _time, _value, key, title, result };
     })
     .catch(() => [])
     .then((res) =>
       res.reduce((a, r) => {
+        if (r.result !== 'result') {
+          return a;
+        }
         const did = r.key;
         const data = { x: r._time, y: r._value };
         const dI = a.findIndex((d) => d.key === did);
