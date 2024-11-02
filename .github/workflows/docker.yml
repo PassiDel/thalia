@@ -35,6 +35,7 @@ jobs:
           tags: |
             # set latest tag for default branch
             type=raw,value=latest,enable={{is_default_branch}}
+            type=semver,pattern={{version}}
       - name: Extract metadata for Docker
         id: meta_worker
         uses: docker/metadata-action@v5
@@ -43,6 +44,7 @@ jobs:
           tags: |
             # set latest tag for default branch
             type=raw,value=latest,enable={{is_default_branch}}
+            type=semver,pattern={{version}}
       - name: Build and push
         id: push_web
         uses: docker/build-push-action@v3
