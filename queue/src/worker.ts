@@ -49,7 +49,7 @@ const worker = new Worker<ScrapeData>(
     );
 
     const { title, author, type, isbn } =
-      /^'(?<title>.*)' von '(?<author>.*)' - (?<type>.*) - '(?<isbn>.*)'$/.exec(
+      /^'?(?<title>.*)'? von '?(?<author>.*)'? - (?<type>.*) - '?(?<isbn>[\d-]*)'?/.exec(
         obj['og:title']
       )!!.groups!!;
 
